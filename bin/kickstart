@@ -3,7 +3,7 @@
 VERSION=3.10.3
 PLATFORM_HOME=/srv/platform
 BOOTSTRAP_BRANCH=${BRANCH:-master}
-BOOTSTRAP_REPO=https://github.com/rockstat/bootstrap.git
+BOOTSTRAP_REPO=https://github.com/AndreOrlov/bootstrap.git
 BOOTSTRAP_DIR=/srv/platform/bootstrap
 BOOTSTRAP_BINDIR=${BOOTSTRAP_DIR}/bin
 KICKSTART=${BOOTSTRAP_BINDIR}/kickstart
@@ -84,8 +84,8 @@ print_ok() {
 ### DEPRECATED
 
 # check credentials
-print_error "Master version is too old and deprecated. Switch to 'dev' branch then README.md for more information"; 
-print_status "https://github.com/rockstat/bootstrap/tree/dev"; 
+print_error "Master version is too old and deprecated. Switch to 'dev' branch then README.md for more information";
+print_status "https://github.com/rockstat/bootstrap/tree/dev";
 exit 1;
 
 
@@ -218,7 +218,7 @@ whiptailInput() {
     eval local init="\$$1"
     case "$1" in
         *PASSWORD*) local prompt='passwordbox'; showval="" ;;
-        *) local prompt='inputbox'; showval=$init; ;;	
+        *) local prompt='inputbox'; showval=$init; ;;
     esac
     local value=$(whiptail --title "$2" --${prompt} "$3" $4 $5 $showval 3>&1 1>&2 2>&3)
     local rc=$?
@@ -450,7 +450,7 @@ menu() {
     "33") switch_ssl_challenge ;;
     "34") run_platform_playbook fakeshop ;;
     "00") exit 0 ;;
-    *) echo "Unknown action '${OPTION}'" ;;	
+    *) echo "Unknown action '${OPTION}'" ;;
   esac
   # sleep 0.5
 }
