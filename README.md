@@ -16,7 +16,7 @@ Requires OS: Ubutnu 16.04.x
 
 **Caution!**
 
-Rockstat required fresh server without any other software. Don't  install rockstat on existing server with other software! 
+Rockstat required fresh server without any other software. Don't  install rockstat on existing server with other software!
 Setup process do significant system reconfiguration.
 
 ### Domain records
@@ -38,7 +38,7 @@ yourdomain (or @)       A  1.2.3.4
 
 ### Start server
 
-Required steps depends of 
+Required steps depends of
 
 ### Local setup on server
 
@@ -61,7 +61,7 @@ sudo apt -qqy update && sudo apt -qqy install curl
 Then run:
 
 ```shell
-curl -s "https://raw.githubusercontent.com/rockstat/bootstrap/master/bin/kickstart?$(date '+%s')" | sudo -E bash -
+curl -s "https://raw.githubusercontent.com/rockstat/bootstrap/master/bin/kickstart?$(date '+%s')" | sudo -H -E bash -
 
 sudo reboot
 ```
@@ -69,7 +69,7 @@ sudo reboot
 For **development** version
 
 ```shell
-curl -s "https://raw.githubusercontent.com/rockstat/bootstrap/dev/bin/kickstart?$(date '+%s')" | sudo -E BRANCH=dev bash -
+curl -s "https://raw.githubusercontent.com/rockstat/bootstrap/dev/bin/kickstart?$(date '+%s')" | sudo -H -E BRANCH=dev bash -
 sudo reboot
 ```
 
