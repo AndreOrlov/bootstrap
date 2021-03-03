@@ -519,6 +519,7 @@
           memory: "300m"
           volumes:
             - "{{dirs.front_custom_config}}:/app/config/custom"
+            - "{{dirs.front_data}}/lib.js:/app/static/lib.js"
 
       vars:
         service: "front"
