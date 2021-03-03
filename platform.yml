@@ -5,7 +5,7 @@
   tasks:
 
     - debug:
-        msg: 
+        msg:
           email: "{{_email}}"
           realname: "{{_fullname}}"
           domain: "{{_domain}}"
@@ -15,11 +15,11 @@
       tags: ['never']
 
 
-      #### ##### ##### ##### #####    Check is python 3    ##### ##### ##### ##### ##### 
+      #### ##### ##### ##### #####    Check is python 3    ##### ##### ##### ##### #####
 
     - name: Checking python version is 3
       assert:
-        that: 
+        that:
           - "ansible_python_interpreter == '/usr/bin/python3'"
         msg: "Required python 3. Details: https://docs.ansible.com/ansible/latest/reference_appendices/python_3_support.html"
       tags: ["always"]
@@ -41,7 +41,7 @@
       tags: ["never", "full", "platform", "dirs"]
 
 
-      ##### ##### ##### ##### #####    Checking system reqs    ##### ##### ##### ##### ##### 
+      ##### ##### ##### ##### #####    Checking system reqs    ##### ##### ##### ##### #####
     - block:
       - name: Checking server total mem
         assert:
@@ -50,7 +50,7 @@
           msg: "Required mem >= 4GB"
 
       - debug: var=msg
-            
+
       vars:
         msg:
           memtotal_mb: "{{ansible_memtotal_mb}}"
@@ -60,8 +60,8 @@
           theia_memory_limit: "{{mem_limit_theia}}"
       tags: ['always']
 
-      ##### ##### ##### ##### #####    Server configuration    ##### ##### ##### ##### ##### 
-      
+      ##### ##### ##### ##### #####    Server configuration    ##### ##### ##### ##### #####
+
     - block:
       - name: BaseServer role execution
         include_role:
@@ -79,7 +79,7 @@
       when: 'setup_server == True'
       tags: ['never', 'os', 'network', 'system', 'full']
 
-      ##### ##### ##### ##### #####    Check DNS configuration    ##### ##### ##### ##### ##### 
+      ##### ##### ##### ##### #####    Check DNS configuration    ##### ##### ##### ##### #####
       # Should be after server configuration role that ensure dns utils is installed
 
     - block:
@@ -88,16 +88,16 @@
         check_domains: "{{_domains + [_domain]}}"
       tags: ['never', 'ssl', 'full']
 
-      
 
 
-    ##### ##### ##### ##### #####    Docker server     ##### ##### ##### ##### ##### 
+
+    ##### ##### ##### ##### #####    Docker server     ##### ##### ##### ##### #####
 
     - block:
       - name: Docker role execution
         include_role:
           name: dr.docker
-        vars: 
+        vars:
           drd_users:
           - "{{support_user}}"
           drd_create_network: yes
@@ -110,7 +110,7 @@
       tags: ['never', 'system', 'docker', 'full']
 
 
-    ##### ##### ##### ##### #####    Dashboard    ##### ##### ##### ##### ##### 
+    ##### ##### ##### ##### #####    Dashboard    ##### ##### ##### ##### #####
 
     - name: Cloning Dashboard content
       git:
@@ -122,7 +122,7 @@
       tags: ['dashboard', 'platform', 'ppart', 'band', 'static', 'full']
 
 
-    ##### ##### ##### ##### #####    Splash screen    ##### ##### ##### ##### ##### 
+    ##### ##### ##### ##### #####    Splash screen    ##### ##### ##### ##### #####
 
     # - block:
     #   - name: Cloning Splash content
@@ -131,16 +131,16 @@
     #       dest: "{{dirs.splash}}"
     #       accept_hostkey: yes
     #       force: yes
-        
+
     #   - template:
     #       src: google-webmaster.j2
     #       dest: "{{dirs.splash}}/{{_google_webmaster}}"
     #     when: "_google_webmaster is defined and _google_webmaster != ''"
-      
+
     #   tags: ['splash', 'platform', 'ppart', 'band', 'static', 'full']
 
 
-    ##### ##### ##### ##### #####    Exposeur (UFW, iptables)    ##### ##### ##### ##### ##### 
+    ##### ##### ##### ##### #####    Exposeur (UFW, iptables)    ##### ##### ##### ##### #####
 
     - block:
       - name: Exposeur role execution
@@ -152,7 +152,7 @@
           expo_expose_rules: '{{expose_rules|default([]) + host_expose_rules|default([]) + group_expose_rules|default([])}}'
       tags: ['never', 'firewall', 'network', 'system', 'full']
 
-    ##### ##### ##### ##### #####    Lets encrypt - acme.sh    ##### ##### ##### ##### ##### 
+    ##### ##### ##### ##### #####    Lets encrypt - acme.sh    ##### ##### ##### ##### #####
 
 
 
@@ -172,7 +172,7 @@
         #     _r_check_addr: "{{if_inner}}:{{ports.http.0}}"
         #     _r_bind_addr: "{{if_inner}}:{{ports.letsencrypt.0}}"
         #     _r_cert_root: "{{dirs.certs}}"
-        #     _r_dns_provider: "{{_ssl_dns_provider|default('dns_acmedns')}}" 
+        #     _r_dns_provider: "{{_ssl_dns_provider|default('dns_acmedns')}}"
         #     _r_dns_envs: "{{_ssl_dns_envs|default({})}}"
         #     _r_debug: yes
         #     _r_log: no
@@ -189,7 +189,7 @@
     #   when: "_setup_ssl == True"
     #   tags: ['never', 'full', 'system', 'ssl']
 
-    ##### ##### ##### ##### #####    Caddy    ##### ##### ##### ##### ##### 
+    ##### ##### ##### ##### #####    Caddy    ##### ##### ##### ##### #####
 
 
     - block:
@@ -224,14 +224,14 @@
           src: "{{item}}"
           dest: "{{ caddy_build_dir }}/{{ (item|basename|splitext).0 }}"
         with_fileglob: 'templates/caddy/*.j2'
-      
+
       - name: 'Creating container'
         docker_container:
           name: caddy
           hostname: caddy
           image: "{{images.caddy}}"
           # labels: "{{docker_band_lbls}}"
-          ports: 
+          ports:
             - "0.0.0.0:{{ports.http.0}}:{{ports.http.0}}"
             - "0.0.0.0:{{ports.https.0}}:{{ports.https.0}}"
           networks: [ { name: "{{docker_net_name}}" } ]
@@ -257,7 +257,7 @@
         service: caddy
         s_jwt_config: "{{(ansible_local.jwt|default({})).general|default({}) }}"
         s_jwt_secret: "{{ jwt_secret|default(s_jwt_config.secret|default(64|token_urlsafe)) }}"
-        _facts_dict: 
+        _facts_dict:
           secret: "{{ s_jwt_secret }}"
         extra_env:
           ACME_AGREE: 'true'
@@ -279,7 +279,7 @@
       tags: ['never', 'caddy', 'httpd', 'system', 'full']
 
     # - block:
-    ##### ##### ##### ##### #####    Nginx    ##### ##### ##### ##### ##### 
+    ##### ##### ##### ##### #####    Nginx    ##### ##### ##### ##### #####
 
       # - include_vars: vars/nginx.yml
       # - name: Nginx role execution
@@ -301,7 +301,7 @@
       # vars:
       #   local_config: "{{ansible_local.config|default({})}}"
       #   local_general: "{{local_config.general|default({})}}"
-        
+
       #   common_users:
       #     - "admin:{{_admin_password}}"
       #     - "{{local_general.users}}"
@@ -309,7 +309,7 @@
       # tags: ['never', 'nginx', 'httpd', 'system', 'full']
 
 
-    ##### ##### ##### ##### #####    Netdata    ##### ##### ##### ##### ##### 
+    ##### ##### ##### ##### #####    Netdata    ##### ##### ##### ##### #####
 
     - block:
 
@@ -322,14 +322,14 @@
           name: netdata
         when: ansible_service_mgr == 'systemd'
         failed_when: False
-          
+
       - name: Netdata container
         docker_container:
           name: netdata
           hostname: netdata
           image: "{{images.netdata}}"
-          labels: "{{container_lbls|combine(_caddy_container_lbls)}}" # docker_band_lbls, 
-          ports: 
+          labels: "{{container_lbls|combine(_caddy_container_lbls)}}" # docker_band_lbls,
+          ports:
             - "{{if_inner}}:{{ports.netdata.0}}:{{ports.netdata.1}}"
             - "{{if_inner}}:{{ports.statsd.0}}:{{ports.statsd.1}}/udp"
           networks: [ { name: "{{docker_net_name}}" } ]
@@ -357,9 +357,9 @@
           "caddy.targetport": "{{ports.netdata.1}}"
       tags: ['never', 'netdata', 'system', 'full']
 
-  
 
-    ##### ##### ##### ##### #####    Clickhouse    ##### ##### ##### ##### ##### 
+
+    ##### ##### ##### ##### #####    Clickhouse    ##### ##### ##### ##### #####
 
 
 
@@ -408,7 +408,7 @@
           # pull: yes
           # recreate: yes
           sysctls: "{{docker_sysctls}}"
-          ports: 
+          ports:
             - "{{if_inner}}:{{ports.clickhouse.0}}:{{ports.clickhouse.1}}"
             - "{{if_inner}}:{{ports.clickhouse_tcp.0}}:{{ports.clickhouse_tcp.1}}"
           volumes:
@@ -424,7 +424,7 @@
         init_dir: /docker-entrypoint-initdb.d
       tags: ['never', 'clickhouse', 'clickhouse-server', 'system', 'full']
 
-    ##### ##### ##### ##### #####    Redis server    ##### ##### ##### ##### ##### 
+    ##### ##### ##### ##### #####    Redis server    ##### ##### ##### ##### #####
 
     - name: Redis setup
       block:
@@ -447,7 +447,7 @@
       tags: ['never', 'redis', 'system', 'docker-container', 'full']
 
 
-    ##### ##### ##### ##### #####    Band Director    ##### ##### ##### ##### ##### 
+    ##### ##### ##### ##### #####    Band Director    ##### ##### ##### ##### #####
 
     - name: Band director block
       block:
@@ -494,7 +494,7 @@
         image: "{{ images[service] }}"
       tags: ['band', 'platform', 'ppart', 'director', 'docker-container', 'full']
 
-    ##### ##### ##### ##### #####    Front    ##### ##### ##### ##### ##### 
+    ##### ##### ##### ##### #####    Front    ##### ##### ##### ##### #####
 
     - block:
       - docker_container: name=frontier state=absent
@@ -505,7 +505,7 @@
           hostname: front
           image: "{{ images.front }}"
           labels: "{{ docker_band_lbls }}"
-          ports: 
+          ports:
             - "{{if_inner}}:{{ports.front.0}}:{{ports.front.1}}"
             - "{{if_inner}}:{{ports.front_ws.0}}:{{ports.front_ws.1}}"
           networks: [ { name: "{{docker_net_name}}" } ]
@@ -526,7 +526,7 @@
       tags: ['front', 'platform', 'ppart', 'rockme', 'docker-container', 'full']
 
 
-    ##### ##### ##### ##### #####    ClickHouse migrations    ##### ##### ##### ##### ##### 
+    ##### ##### ##### ##### #####    ClickHouse migrations    ##### ##### ##### ##### #####
     # - name: Including ClickHouse maintain role
     #   block:
     #   - import_tasks: tasks/ch_migrate.yml
@@ -536,7 +536,7 @@
     #       migrations_path: clickhouse_migrations
     #   tags: ['never', 'chmigrate']
 
-        ##### ##### ##### ##### #####    Clickhouse Proxy    ##### ##### ##### ##### ##### 
+        ##### ##### ##### ##### #####    Clickhouse Proxy    ##### ##### ##### ##### #####
 
     - block:
 
@@ -570,7 +570,7 @@
       tags: ['never', 'clickhouse-proxy', 'chproxy', 'platform', 'pservice', 'docker-container', 'full']
 
 
-    ##### ##### ##### ##### #####    ClickHouse Writer    ##### ##### ##### ##### ##### 
+    ##### ##### ##### ##### #####    ClickHouse Writer    ##### ##### ##### ##### #####
 
     - block:
       - name: Starting container with ChWriter service
@@ -596,7 +596,7 @@
         service: chwriter
       tags: ['chwriter', 'platform', 'ppart', 'rockme', 'docker-container', 'full']
 
-    ##### ##### ##### ##### #####    Heavyload    ##### ##### ##### ##### ##### 
+    ##### ##### ##### ##### #####    Heavyload    ##### ##### ##### ##### #####
 
     - block:
       - name: Starting container with Heavyload service
@@ -621,7 +621,7 @@
         service: heavyload
       tags: ['heavyload', 'platform', 'pservice', 'docker-container', 'full']
 
-    ##### ##### ##### ##### #####    jupyter    ##### ##### ##### ##### ##### 
+    ##### ##### ##### ##### #####    jupyter    ##### ##### ##### ##### #####
     - block:
       - docker_container:
           name: anaconda
@@ -664,7 +664,7 @@
       tags: ['never', 'jupyter', 'jupyter', 'platform', 'pservice', 'docker-container', 'full']
 
 
-    ##### ##### ##### ##### #####    Grafana    ##### ##### ##### ##### ##### 
+    ##### ##### ##### ##### #####    Grafana    ##### ##### ##### ##### #####
     - block:
       - name: Creating Grafana datadir
         file:
@@ -696,18 +696,18 @@
           "caddy.address": "grafana.{{_domain}}"
           "caddy.targetport": "{{ports.grafana.1}}"
           "caddy.proxy.header_upstream": "X-WEBAUTH-USER admin"
-          
+
       tags: ['never', 'grafana', 'platform', 'pservice', 'docker-container', 'full']
 
 
-    ##### ##### ##### ##### #####    Theia    ##### ##### ##### ##### ##### 
+    ##### ##### ##### ##### #####    Theia    ##### ##### ##### ##### #####
     - block:
 
       - name: Fix workspace permissions
         command: "chown -R {{_uid}}:{{_gid}} {{dirs.workspace}}"
         args:
           warn: False
-      
+
       - name: Starting container for service Theia
         docker_container:
           name: theia
@@ -751,19 +751,19 @@
       tags: ['theia', 'platform', 'pservice', 'band', 'docker-container', 'full']
 
 
-    ##### ##### ##### ##### #####    VPN Server    ##### ##### ##### ##### ##### 
+    ##### ##### ##### ##### #####    VPN Server    ##### ##### ##### ##### #####
 
 
     # - import_tasks: tasks/setup_vpn_server.yml
       # tags: ['never', 'ovpn-server']
 
 
-    ##### ##### ##### ##### #####    Custom tasks    ##### ##### ##### ##### ##### 
+    ##### ##### ##### ##### #####    Custom tasks    ##### ##### ##### ##### #####
 
     - import_tasks: tasks/custom.yml
       tags: ['full']
 
-    ##### ##### ##### ##### #####    Fake Shop    ##### ##### ##### ##### ##### 
+    ##### ##### ##### ##### #####    Fake Shop    ##### ##### ##### ##### #####
 
 
     - block:
@@ -780,7 +780,7 @@
           memory: "50m"
       vars:
         service: fakeshop
-        service_addr: 
+        service_addr:
         labels:
           caddy.address: "demo.{{_domain}}"
       tags: ['never', 'fakeshop', 'platform', 'pservice', 'docker-container', 'full']
