@@ -95,6 +95,7 @@ dirs:
   chwriter_custom_config: "{{data_dir}}/chwriter_custom_config"
   chwriter_custom_migrations: "{{data_dir}}/chwriter_custom_migrations"
   chwriter_emergency: "{{data_dir}}/chwriter_emergency"
+  front_data: "{{data_dir}}/front"
   band: "{{images_dir}}/band_base"
   band_set: "{{images_dir}}/band_set"
   rockme_set: "{{images_dir}}/rockme_set"
@@ -125,7 +126,7 @@ dirs:
 create_dirs:
   - ["{{ images_dir }}", "{{ build_dir }}", "{{ data_dir }}", "{{ etc_dir }}", ]
   - ["{{ dirs.well_known }}","{{ dirs.certs }}", "{{ dirs.user_images }}"]
-  - ["{{ dirs.workspace }}", "{{ dirs.public }}", "{{ dirs.grafana_data }}"]
+  - ["{{ dirs.workspace }}", "{{ dirs.public }}", "{{ dirs.grafana_data }}", "{{dirs.front_data }}"]
   - ["{{ dirs.front_custom_config }}", "{{ dirs.chwriter_custom_config }}"]
   - ["{{ dirs.chwriter_custom_migrations }}", "{{ dirs.environments }}"]
   - ["{{ dirs.user_libraries }}", "{{ dirs.shared }}"]
@@ -180,7 +181,7 @@ mem_limit_grafana: "{{ (ansible_memtotal_mb/4)|int }}m"
 docker_net_name: custom
 docker_interface: docker1
 docker_net_pattern: 172.16.25.* # will be converted to 172.16.25.0/24
-docker_users: 
+docker_users:
   - '{{support_user}}'
 # calculable
 docker_net: "{{docker_net_pattern|ip_p2n}}"
@@ -223,9 +224,9 @@ firewall_rules:
 # install libs to python containers: jupyter and theia
 _dev_py_libs: ["msgpack", "ujson", "prodict", "arrow", "simplech", "asimplech"]
 dev_py_libs: "{{_dev_env_py_libs|combine(_dev_py_libs_extra|default({})) }}"
-# ########## ClickHouse ##########  
+# ########## ClickHouse ##########
 _clickhouse_profiles_custom:
-  sys_prof: { max_memory_usage: 3000000000, use_uncompressed_cache: 0, load_balancing: random } 
+  sys_prof: { max_memory_usage: 3000000000, use_uncompressed_cache: 0, load_balancing: random }
   user_prof: { max_memory_usage: 2000000000, use_uncompressed_cache: 0, load_balancing: random }
 _clickhouse_users_custom:
   - { name: "{{rsys_creds.0}}", password: "{{rsys_creds.1}}", networks: "{{ local_nets }}", profile: "sys_prof", quota: "default" }
@@ -261,7 +262,7 @@ _chs_dsn: "http://{{main_user}}@host:{{ports.clickhouse.0}}/{{ch_db}}"
 # ########## Services env ##########
 _containers_env:
   # https://caddyserver.com/docs/automatic-https#wildcards
-  caddy: 
+  caddy:
     CADDY_DOCKER_POLLING_INTERVAL: 60s
     # CADDY_DOCKER_LABEL_PREFIX: caddy
     # CADDY_DOCKER_PROXY_SERVICE_TASKS: no
@@ -311,7 +312,7 @@ _caddy_container_lbls:
 
 # ########## NGINX COMMONS ##########
 # common blocks
-# _nginx_listen: 
+# _nginx_listen:
 #   - "listen 443 ssl http2"
 # _nginx_ssl:
 #   - ssl_certificate_key     {{dirs.certs}}/{{_domain}}/{{_ssl_cert_key}}
@@ -338,7 +339,7 @@ _caddy_container_lbls:
 #   }
 #   if ($request_method = 'POST') { {{ _nginx_cors_loc_common }} add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range'; }
 #   if ($request_method = 'GET') { {{ _nginx_cors_loc_common }} add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range'; }
-# _nginx_base_vh: "{{ _nginx_listen + _nginx_ssl }}"  
+# _nginx_base_vh: "{{ _nginx_listen + _nginx_ssl }}"
 # specific configurations
 # _nginx_proxy_vh:
 #   - server_name {sd}.{{_domain}}
@@ -363,7 +364,7 @@ _caddy_container_lbls:
 # _nginx_upload_loc:
 #   - location /upload {
 #       client_max_body_size 500m;
-#       client_body_buffer_size 128K; 
+#       client_body_buffer_size 128K;
 #       limit_except POST { deny all; }
 #       proxy_pass http://uheavyload; }
 # _nginx_front:
