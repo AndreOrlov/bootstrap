@@ -519,7 +519,7 @@
           memory: "300m"
           volumes:
             - "{{dirs.front_custom_config}}:/app/config/custom"
-            - "{{dirs.front_data}}/lib.js:/app/static/lib.js"
+            - "{{dirs.front_data}}/lib.js:/app/static/lib.js" # TODO: rad добавить добавление при наличии файла в этои папке. Если его не будет, то создастся папка lib.js и ничего работать не будет
 
       vars:
         service: "front"
